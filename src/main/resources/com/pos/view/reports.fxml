@@ -1,47 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<VBox spacing="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pos.controller.ReportsController" style="-fx-padding: 20;">
-    <Label text="Sales Reports" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+<VBox xmlns="http://javafx.com/javafx/17"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.pos.controller.ReportsController"
+    spacing="10"
+    style="-fx-padding: 20;">
+    <children>
+        <Label text="Sales Reports" style="-fx-font-size: 24; -fx-font-weight: bold;" />
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="From:" style="-fx-padding: 5;"/>
-        <DatePicker fx:id="dateFrom"/>
-        <Label text="To:" style="-fx-padding: 5;"/>
-        <DatePicker fx:id="dateTo"/>
-        <Button fx:id="btnGenerate" text="Generate Report" onAction="#handleGenerate"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnClose" text="Close" onAction="#handleClose"/>
-    </HBox>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <children>
+                <Label text="From:" style="-fx-padding: 5;" />
+                <DatePicker fx:id="dateFrom" />
+                <Label text="To:" style="-fx-padding: 5;" />
+                <DatePicker fx:id="dateTo" />
+                <Button fx:id="btnGenerate" text="Generate Report" onAction="#handleGenerate" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnClose" text="Close" onAction="#handleClose" />
+            </children>
+        </HBox>
 
-    <HBox spacing="20" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 5;">
-        <VBox spacing="5">
-            <Label text="Total Revenue" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
-            <Label fx:id="lblTotalRevenue" text="$0.00" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
-        </VBox>
-        <Separator orientation="VERTICAL"/>
-        <VBox spacing="5">
-            <Label text="Transactions" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
-            <Label fx:id="lblTotalTransactions" text="0" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-        </VBox>
-        <Separator orientation="VERTICAL"/>
-        <VBox spacing="5">
-            <Label text="Average Sale" style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;"/>
-            <Label fx:id="lblAverageSale" text="$0.00" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-        </VBox>
-    </HBox>
+        <HBox spacing="20"
+            style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 5;">
+            <children>
+                <VBox spacing="5">
+                    <children>
+                        <Label text="Total Revenue"
+                            style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;" />
+                        <Label fx:id="lblTotalRevenue" text="GH₵0.00"
+                            style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #27ae60;" />
+                    </children>
+                </VBox>
+                <Separator orientation="VERTICAL" />
+                <VBox spacing="5">
+                    <children>
+                        <Label text="Transactions"
+                            style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;" />
+                        <Label fx:id="lblTotalTransactions" text="0"
+                            style="-fx-font-size: 20; -fx-font-weight: bold;" />
+                    </children>
+                </VBox>
+                <Separator orientation="VERTICAL" />
+                <VBox spacing="5">
+                    <children>
+                        <Label text="Average Sale"
+                            style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;" />
+                        <Label fx:id="lblAverageSale" text="GH₵0.00"
+                            style="-fx-font-size: 20; -fx-font-weight: bold;" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
 
-    <BarChart fx:id="salesChart" VBox.vgrow="ALWAYS">
-        <xAxis>
-            <CategoryAxis fx:id="xAxis" label="Date"/>
-        </xAxis>
-        <yAxis>
-            <NumberAxis fx:id="yAxis" label="Sales ($)"/>
-        </yAxis>
-    </BarChart>
+        <Pane prefHeight="300" prefWidth="600"
+            style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;">
+            <children>
+                <Label layoutX="10" layoutY="10" text="Sales chart will appear here" />
+            </children>
+        </Pane>
+    </children>
 </VBox>

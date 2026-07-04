@@ -1,5 +1,11 @@
 package com.pos.controller;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.Optional;
+
 import com.pos.dao.ProductDAO;
 import com.pos.dao.SaleDAO;
 import com.pos.model.CartItem;
@@ -7,6 +13,7 @@ import com.pos.model.Product;
 import com.pos.model.Sale;
 import com.pos.service.ReceiptService;
 import com.pos.service.SessionManager;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,21 +23,31 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.Optional;
 
 public class POSController {
 
@@ -66,7 +83,7 @@ public class POSController {
     private final ProductDAO productDAO = new ProductDAO();
     private final SaleDAO saleDAO = new SaleDAO();
     private final ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
-    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("en", "GH"));
     private Sale currentSale;
 
     @FXML

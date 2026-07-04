@@ -1,6 +1,8 @@
 package com.pos.controller;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.pos.dao.ProductDAO;
@@ -40,6 +42,7 @@ public class ProductsController {
     @FXML private Button btnClear;
 
     private final ProductDAO productDAO = new ProductDAO();
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("en", "GH"));
     private Product selectedProduct;
 
     @FXML
@@ -64,7 +67,7 @@ public class ProductsController {
             @Override
             protected void updateItem(BigDecimal price, boolean empty) {
                 super.updateItem(price, empty);
-                setText(empty || price == null ? null : String.format("$%.2f", price));
+                setText(empty || price == null ? null : currencyFormat.format(price));
             }
         });
     }

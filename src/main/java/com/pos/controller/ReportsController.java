@@ -2,9 +2,11 @@ package com.pos.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.pos.dao.SaleDAO;
 
@@ -36,16 +38,27 @@ public class ReportsController {
 
     private final SaleDAO saleDAO = new SaleDAO();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("en", "GH"));
 
     @FXML
     public void initialize() {
-        dateFrom.setValue(LocalDate.now().minusDays(30));
-        dateTo.setValue(LocalDate.now());
+        if (dateFrom != null) {
+            dateFrom.setValue(LocalDate.now().minusDays(30));
+        }
+        if (dateTo != null) {
+            dateTo.setValue(LocalDate.now());
+        }
 
-        xAxis.setLabel("Date");
-        yAxis.setLabel("Sales ($)");
-        salesChart.setTitle("Daily Sales");
-        salesChart.setLegendVisible(false);
+        if (xAxis != null) {
+            xAxis.setLabel("Date");
+        }
+        if (yAxis != null) {
+            yAxis.setLabel("Sales (GHS)");
+        }
+        if (salesChart != null) {
+            salesChart.setTitle("Daily Sales");
+            salesChart.setLegendVisible(false);
+        }
 
         if (btnGenerate != null) {
             btnGenerate.setOnAction(e -> handleGenerate());
@@ -53,11 +66,13 @@ public class ReportsController {
         if (btnClose != null) {
             btnClose.setOnAction(e -> handleClose());
         }
-        if (chartContainer != null) {
+        if (chartContainer != null && salesChart != null) {
             chartContainer.getChildren().setAll(salesChart);
         }
 
-        generateReport();
+        if (dateFrom != null && dateTo != null) {
+            generateReport();
+        }
     }
 
     @FXML
@@ -66,6 +81,10 @@ public class ReportsController {
     }
 
     private void generateReport() {
+        if (dateFrom == null || dateTo == null || salesChart == null || lblTotalRevenue == null || lblTotalTransactions == null || lblAverageSale == null) {
+            return;
+        }
+
         LocalDate start = dateFrom.getValue();
         LocalDate end = dateTo.getValue();
 
@@ -97,13 +116,13 @@ public class ReportsController {
         salesChart.getData().clear();
         salesChart.getData().add(series);
 
-        lblTotalRevenue.setText(String.format("$%.2f", totalRevenue));
+        lblTotalRevenue.setText(currencyFormat.format(totalRevenue));
         lblTotalTransactions.setText(String.valueOf(totalTransactions));
 
         BigDecimal avgSale = totalTransactions > 0
             ? totalRevenue.divide(BigDecimal.valueOf(totalTransactions), 2, RoundingMode.HALF_UP)
             : BigDecimal.ZERO;
-        lblAverageSale.setText(String.format("$%.2f", avgSale));
+        lblAverageSale.setText(currencyFormat.format(avgSale));
     }
 
     @FXML

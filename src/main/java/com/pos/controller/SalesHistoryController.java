@@ -1,19 +1,30 @@
 package com.pos.controller;
 
-import com.pos.dao.SaleDAO;
-import com.pos.model.CartItem;
-import com.pos.model.Sale;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+import com.pos.dao.SaleDAO;
+import com.pos.model.CartItem;
+import com.pos.model.Sale;
+
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class SalesHistoryController {
 
@@ -34,51 +45,75 @@ public class SalesHistoryController {
 
     private final SaleDAO saleDAO = new SaleDAO();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("en", "GH"));
 
     @FXML
     public void initialize() {
         setupTable();
-        loadSales();
         setupDatePickers();
+        loadSales();
     }
 
     private void setupTable() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colDate.setCellValueFactory(cellData -> 
-            new javafx.beans.property.SimpleStringProperty(
-                cellData.getValue().getSaleDate().format(formatter)));
-        colReceipt.setCellValueFactory(new PropertyValueFactory<>("receiptNumber"));
-        colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
-        colPayment.setCellValueFactory(new PropertyValueFactory<>("paymentMethod"));
-        colCashier.setCellValueFactory(new PropertyValueFactory<>("cashier"));
-
-        colTotal.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(BigDecimal total, boolean empty) {
-                super.updateItem(total, empty);
-                setText(empty || total == null ? null : String.format("$%.2f", total));
-                setStyle(empty ? "" : "-fx-alignment: CENTER_RIGHT; -fx-font-weight: bold;");
-            }
-        });
+        if (colId != null) {
+            colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        }
+        if (colDate != null) {
+            colDate.setCellValueFactory(cellData -> 
+                new javafx.beans.property.SimpleStringProperty(
+                    cellData.getValue().getSaleDate().format(formatter)));
+        }
+        if (colReceipt != null) {
+            colReceipt.setCellValueFactory(new PropertyValueFactory<>("receiptNumber"));
+        }
+        if (colTotal != null) {
+            colTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+            colTotal.setCellFactory(col -> new TableCell<>() {
+                @Override
+                protected void updateItem(BigDecimal total, boolean empty) {
+                    super.updateItem(total, empty);
+                    setText(empty || total == null ? null : currencyFormat.format(total));
+                    setStyle(empty ? "" : "-fx-alignment: CENTER_RIGHT; -fx-font-weight: bold;");
+                }
+            });
+        }
+        if (colPayment != null) {
+            colPayment.setCellValueFactory(new PropertyValueFactory<>("paymentMethod"));
+        }
+        if (colCashier != null) {
+            colCashier.setCellValueFactory(new PropertyValueFactory<>("cashier"));
+        }
     }
 
     private void loadSales() {
+        if (salesTable == null) {
+            return;
+        }
+
         ObservableList<Sale> sales = saleDAO.getAllSales();
         salesTable.setItems(sales);
         updateSummary(sales);
     }
 
     private void updateSummary(ObservableList<Sale> sales) {
+        if (lblTotalSales == null || lblTotalTransactions == null) {
+            return;
+        }
+
         BigDecimal totalSales = sales.stream()
             .map(Sale::getTotal)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-        lblTotalSales.setText(String.format("$%.2f", totalSales));
+        lblTotalSales.setText(currencyFormat.format(totalSales));
         lblTotalTransactions.setText(String.valueOf(sales.size()));
     }
 
     private void setupDatePickers() {
-        dateFrom.setValue(LocalDate.now().minusDays(7));
-        dateTo.setValue(LocalDate.now());
+        if (dateFrom != null) {
+            dateFrom.setValue(LocalDate.now().minusDays(7));
+        }
+        if (dateTo != null) {
+            dateTo.setValue(LocalDate.now());
+        }
     }
 
     @FXML
@@ -143,7 +178,7 @@ public class SalesHistoryController {
             @Override
             protected void updateItem(BigDecimal price, boolean empty) {
                 super.updateItem(price, empty);
-                setText(empty || price == null ? null : String.format("$%.2f", price));
+                setText(empty || price == null ? null : currencyFormat.format(price));
             }
         });
 
@@ -154,7 +189,7 @@ public class SalesHistoryController {
             @Override
             protected void updateItem(BigDecimal subtotal, boolean empty) {
                 super.updateItem(subtotal, empty);
-                setText(empty || subtotal == null ? null : String.format("$%.2f", subtotal));
+                setText(empty || subtotal == null ? null : currencyFormat.format(subtotal));
                 setStyle("-fx-font-weight: bold;");
             }
         });
@@ -162,8 +197,8 @@ public class SalesHistoryController {
         itemsTable.getColumns().addAll(colItem, colQty, colPrice, colSubtotal);
         itemsTable.setItems(items);
 
-        Label totals = new Label(String.format("Subtotal: $%.2f\nTax: $%.2f\nDiscount: $%.2f\nTOTAL: $%.2f",
-            selected.getSubtotal(), selected.getTax(), selected.getDiscount(), selected.getTotal()));
+        Label totals = new Label(String.format("Subtotal: %s\nTax: %s\nDiscount: %s\nTOTAL: %s",
+            currencyFormat.format(selected.getSubtotal()), currencyFormat.format(selected.getTax()), currencyFormat.format(selected.getDiscount()), currencyFormat.format(selected.getTotal())));
         totals.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-padding: 10;");
 
         content.getChildren().addAll(info, itemsTable, totals);
